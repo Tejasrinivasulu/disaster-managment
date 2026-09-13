@@ -1,0 +1,14 @@
+.dockerignore
+.git
+.gitignore
+**/__pycache__
+**/*.pyc
+backend/venv
+backend/.pytest_cache
+frontend/node_modules
+frontend/dist
+ml/data
+**/*_random_forest.pkl
+**/*_extra_trees.pkl
+**/*_xgboost.pkl
+**/*_hist_gradient.pkl

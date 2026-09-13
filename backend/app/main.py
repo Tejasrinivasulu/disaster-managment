@@ -2,9 +2,12 @@
 
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
 from app.database import SessionLocal, init_db
@@ -31,6 +34,11 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 settings = get_settings()
+
+
+def frontend_dist() -> Path:
+    """Repo root / frontend / dist (works when cwd is backend/)."""
+    return Path(__file__).resolve().parents[2] / "frontend" / "dist"
 
 
 @asynccontextmanager
@@ -84,9 +92,21 @@ app.include_router(reports.reports_router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
 
 
+@app.get("/api")
+def api_info():
+    return {
+        "status": "ok",
+        "health": "/api/health",
+        "docs": "/docs",
+        "message": settings.app_name,
+    }
+
+
 @app.get("/")
-def root():
-    # On Vercel, index.py replaces this with the SPA FileResponse when dist exists.
+async def root():
+    index = frontend_dist() / "index.html"
+    if index.exists():
+        return FileResponse(index)
     return {
         "message": settings.app_name,
         "docs": "/docs",
@@ -96,11 +116,22 @@ def root():
     }
 
 
-@app.get("/api")
-def api_info():
-    return {
-        "status": "ok",
-        "health": "/api/health",
-        "docs": "/docs",
-        "message": settings.app_name,
-    }
+_dist = frontend_dist()
+if (_dist / "index.html").exists():
+    _assets = _dist / "assets"
+    if _assets.exists():
+        app.mount("/assets", StaticFiles(directory=str(_assets)), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def spa_fallback(full_path: str):
+        if (
+            full_path == "api"
+            or full_path.startswith("api/")
+            or full_path in {"docs", "redoc", "openapi.json"}
+            or full_path.startswith("docs/")
+        ):
+            raise HTTPException(status_code=404, detail="Not Found")
+        candidate = frontend_dist() / full_path
+        if candidate.is_file():
+            return FileResponse(candidate)
+        return FileResponse(frontend_dist() / "index.html")

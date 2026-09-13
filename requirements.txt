@@ -1,5 +1,5 @@
-# Runtime deps for Vercel (frontend is built separately).
-# Keep this lean — serverless bundle limit applies.
+# Runtime deps for Render Docker image (frontend built in Dockerfile).
+# Keep lean for image size. Full local stack: backend/requirements.txt
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
 pydantic==2.10.4
@@ -19,5 +19,5 @@ python-dotenv==1.0.1
 aiofiles==24.1.0
 reportlab==4.2.5
 email-validator==2.2.0
-# OR-Tools omitted on Vercel (bundle size). Allocator uses greedy fallback.
+# OR-Tools omitted in slim image (bundle size). Allocator uses greedy fallback.
 # Install ortools locally via backend/requirements.txt for exact LP solve.

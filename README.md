@@ -15,12 +15,12 @@ Ingest Disaster Data • Score Zones • Predict Demand • Optimize Resources �
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)
 ![XGBoost](https://img.shields.io/badge/XGBoost-FF6600?style=for-the-badge)
-![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![Render](https://img.shields.io/badge/Deploy-Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)
 ![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)
 
 <br>
 
-<img src="https://readme-typing-svg.demolab.com?font=Poppins&weight=700&size=22&pause=1000&color=0F766E&center=true&vCenter=true&width=900&lines=AI+Demand+Prediction+for+Relief;Zone+Priority+%26+Vulnerability+Scoring;OR-Tools+%2F+Greedy+Resource+Optimization;Role-Based+Dashboards+(Admin+%7C+Coordinator+%7C+Field);Deploy+Frontend+%2B+API+on+Vercel">
+<img src="https://readme-typing-svg.demolab.com?font=Poppins&weight=700&size=22&pause=1000&color=0F766E&center=true&vCenter=true&width=900&lines=AI+Demand+Prediction+for+Relief;Zone+Priority+%26+Vulnerability+Scoring;Resource+Optimization+%26+Logistics;Role-Based+Dashboards+(Admin+%7C+Coordinator+%7C+Field);Deploy+UI+%2B+API+on+Render">
 
 </div>
 
@@ -104,10 +104,10 @@ FIELD REPORT → DYNAMIC AI UPDATE → OPERATIONS CONTINUE
 | Frontend | React 18 · Vite · Tailwind CSS · React Router · Leaflet · Recharts · Axios · Lucide |
 | Backend | Python · FastAPI · SQLAlchemy · JWT · Uvicorn |
 | ML | Scikit-Learn · XGBoost · NumPy · Pandas · Joblib |
-| Optimization | OR-Tools (local) · Greedy fallback (Vercel) |
-| Database | SQLite (demo / Vercel `/tmp`) · PostgreSQL-ready |
+| Optimization | OR-Tools (local) · Greedy fallback (cloud slim image) |
+| Database | SQLite (demo / Render `/tmp`) · PostgreSQL-ready |
 | PDF | ReportLab |
-| Deploy | **Vercel only** — static UI + Python serverless API |
+| Deploy | **Render** (Docker — UI + API on one service) |
 
 ---
 
@@ -117,35 +117,13 @@ FIELD REPORT → DYNAMIC AI UPDATE → OPERATIONS CONTINUE
 disaster-response-system/
 │
 ├── frontend/                 # React + Vite UI
-│   ├── src/
-│   │   ├── components/       # OpsWorkflow, maps, layout
-│   │   ├── pages/            # Role dashboards + modules
-│   │   ├── services/         # Axios API client
-│   │   └── utils/            # roles, workflow
-│   └── package.json
-│
 ├── backend/                  # FastAPI application
-│   ├── app/
-│   │   ├── routes/           # Auth, disasters, predict, optimize...
-│   │   ├── ml/               # Demand predictor
-│   │   ├── optimization/     # Allocator
-│   │   └── services/         # Seed + domain logic
-│   └── requirements.txt      # Full local stack (incl. OR-Tools, XGBoost)
-│
-├── ml/
-│   ├── data/                 # Training CSV (local)
-│   ├── models/               # *_linear.pkl + preprocessor (shipped)
-│   ├── results/              # best_models.json
-│   └── train_models.py
-│
-├── api/
-│   └── index.py              # Vercel FastAPI entrypoint
-│
-├── scripts/
-│   └── build_vercel.py       # Builds frontend → public/
-│
-├── requirements.txt          # Slim Vercel Python deps
-├── vercel.json
+├── ml/                       # Training + model artifacts
+├── database/                 # SQL reference schema/seed
+├── docs/                     # Architecture notes
+├── Dockerfile                # Render image (UI + API)
+├── render.yaml               # Render Blueprint
+├── requirements.txt          # Slim production Python deps
 ├── DEPLOY.md
 └── README.md
 ```
@@ -212,29 +190,27 @@ App: `http://127.0.0.1:5173` (Vite proxies `/api` → `:8000`)
 
 ---
 
-# Deploy on **Vercel only** (one project = React UI + FastAPI).
+# 🌐 Deployment — Render (UI + API together)
 
-See **[DEPLOY.md](./DEPLOY.md)** for the full checklist.
+Full guide: **[DEPLOY.md](./DEPLOY.md)**
 
-### Quick fix if you see `{"detail":"Not Found"}`
+**One Render Web Service** builds React and serves it from FastAPI (Docker).
 
-1. Redeploy from repo root (not `frontend/`)
-2. Open `https://YOUR-APP.vercel.app/api/health` — must return `"status":"ok"`
-3. Then open `https://YOUR-APP.vercel.app/` for the login UI
-4. Do **not** set Root Directory to `frontend` in Vercel project settings
-
-### CLI
-
-```bash
-cd disaster-response-system
-npx vercel --prod
-```
+1. Push repo to GitHub (include linear ML pickles)
+2. Render → **New** → **Blueprint** → `render.yaml`
+3. Open `https://YOUR-SERVICE.onrender.com`
 
 | Check | URL |
 |--------|-----|
-| UI | `https://YOUR-APP.vercel.app/` |
-| Health | `https://YOUR-APP.vercel.app/api/health` |
-| API root | `https://YOUR-APP.vercel.app/api` |
+| UI | `https://YOUR-SERVICE.onrender.com/` |
+| Health | `https://YOUR-SERVICE.onrender.com/api/health` |
+| Docs | `https://YOUR-SERVICE.onrender.com/docs` |
+
+| Field | Value |
+|--------|--------|
+| Runtime | Docker |
+| Dockerfile | `./Dockerfile` |
+| Health check | `/api/health` |
 ---
 
 # 📡 API Overview
@@ -260,10 +236,10 @@ npx vercel --prod
 
 # ⚠️ Known Limitations
 
-- SQLite on Vercel `/tmp` is ephemeral (resets on cold recycle) — fine for demos
+- SQLite on Render `/tmp` is ephemeral (resets on recycle) — fine for demos
 - External GDACS / USGS / NDMA feeds are interface-ready; live URLs optional
 - Routing uses local distance estimates unless OSRM is configured
-- Vercel allocation uses **greedy fallback** (OR-Tools on local full install)
+- Cloud image uses **greedy** allocation (OR-Tools available in local `backend/requirements.txt`)
 - Large RF / Extra Trees pickles are excluded from deploy; production uses best **Linear** models
 
 ---

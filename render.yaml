@@ -1,0 +1,28 @@
+# Render: one Web Service = React UI + FastAPI API
+services:
+  - type: web
+    name: disaster-response
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: DEMO_MODE
+        value: "true"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:////tmp/disaster_response.db
+      - key: ML_MODELS_DIR
+        value: ../ml/models
+      - key: ML_RESULTS_DIR
+        value: ../ml/results
+      - key: CORS_ORIGINS
+        value: https://disaster-response.onrender.com
+      - key: CORS_ORIGIN_REGEX
+        value: "https://.*\\.onrender\\.com"

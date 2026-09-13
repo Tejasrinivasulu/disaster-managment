@@ -30,7 +30,6 @@ npm-debug.log*
 .env.local
 .env.*.local
 !.env.example
-!frontend/.env.example
 backend/.env
 
 # IDE
@@ -55,9 +54,6 @@ ml/models/*.joblib
 # Database
 *.db
 *.sqlite3
-
-# Vercel build output
-public/
 
 # OS
 Desktop.ini

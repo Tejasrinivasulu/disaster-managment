@@ -21,8 +21,8 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 480
     algorithm: str = "HS256"
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
-    # Matches Vercel production + preview URLs (https://*.vercel.app)
-    cors_origin_regex: str = r"https://.*\.vercel\.app"
+    # Matches Render / Netlify / Vercel preview & production hosts
+    cors_origin_regex: str = r"https://.*\.(onrender\.com|vercel\.app|netlify\.app)"
     database_url: str = "sqlite:///./disaster_response.db"
     gdacs_api_url: str = ""
     usgs_api_url: str = ""

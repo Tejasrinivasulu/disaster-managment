@@ -1,42 +1,48 @@
-# Deploy on Vercel only (frontend + FastAPI)
+# Deploy both frontend + backend on Render (one service)
 
-## Why you saw `{"detail":"Not Found"}`
+**One Render Web Service** builds React and serves it from FastAPI (same URL for UI and `/api`).
 
-That JSON is a **FastAPI 404**. Common causes:
+## Steps
 
-1. Vercel **Root Directory** was set to `frontend` (API never deployed)
-2. Old setup used `api/index.py` which only matched `/api`, not `/api/health`
-3. SPA rewrite sent `/` to a missing `index.html`
+1. Push this repo to GitHub (include `ml/models/*_linear.pkl`, `preprocessor.pkl`, `ml/results/best_models.json`)
+2. Open [dashboard.render.com](https://dashboard.render.com) → **New** → **Blueprint**
+3. Connect the repo → apply `render.yaml`
+4. Wait for the Docker build
+5. Open `https://YOUR-SERVICE.onrender.com`
 
-**Current setup:** root `index.py` is the FastAPI app (via `pyproject.toml`). It handles `/api/*` and serves the React build from `frontend/dist`.
+| Check | URL |
+|--------|-----|
+| UI (login) | `https://YOUR-SERVICE.onrender.com/` |
+| Health | `https://YOUR-SERVICE.onrender.com/api/health` |
+| API docs | `https://YOUR-SERVICE.onrender.com/docs` |
 
-## Deploy steps
+## Manual Web Service (without Blueprint)
 
-1. Commit & push the repo (include `ml/models/*_linear.pkl`, `preprocessor.pkl`, `ml/results/best_models.json`)
-2. Vercel → Project → Settings:
-   - **Root Directory:** empty / `.` (NOT `frontend`)
-   - Framework: auto / Other
-3. Env (optional): `SECRET_KEY=...`
-4. Redeploy
+| Field | Value |
+|--------|--------|
+| Runtime | **Docker** |
+| Dockerfile path | `./Dockerfile` |
+| Health check path | `/api/health` |
 
-## Verify
+| Env key | Value |
+|---------|--------|
+| `SECRET_KEY` | long random string |
+| `DEMO_MODE` | `true` |
+| `DATABASE_URL` | `sqlite:////tmp/disaster_response.db` |
+| `ML_MODELS_DIR` | `../ml/models` |
+| `ML_RESULTS_DIR` | `../ml/results` |
 
-```text
-GET /api/health   → {"status":"ok", ...}
-GET /api          → {"status":"ok", "health":"/api/health", ...}
-GET /             → React login page (HTML)
-```
+Leave `VITE_API_URL` unset — the UI calls same-origin `/api`.
 
-## CLI
+## Demo logins
 
-```bash
-cd disaster-response-system
-npx vercel login
-npx vercel --prod
-```
+| Email | Password | Role |
+|-------|----------|------|
+| admin@disaster.local | admin123 | Admin |
+| coordinator@disaster.local | coord123 | Coordinator |
+| field@disaster.local | field123 | Field |
 
 ## Notes
 
-- SQLite on `/tmp` resets between cold starts (demo OK)
-- Allocation uses greedy fallback on Vercel (no OR-Tools in slim deps)
-- Leave `VITE_API_URL` unset (browser calls same-origin `/api`)
+- Free tier spins down when idle — first request can be slow
+- SQLite under `/tmp` resets when the instance is recycled (OK for demos)
