@@ -1,70 +1,42 @@
-# Deploy on Vercel only (frontend + FastAPI API)
+# Deploy on Vercel only (frontend + FastAPI)
 
-## What gets deployed
+## Why you saw `{"detail":"Not Found"}`
 
-| Piece | How |
-|--------|-----|
-| React (Vite) UI | Built into `public/` and served on the CDN |
-| FastAPI API | `api/index.py` → Vercel Python serverless function |
-| ML models | Best Linear Regression pickles + preprocessor (small) |
+That JSON is a **FastAPI 404**. Common causes:
 
-Same URL for UI and API, e.g. `https://your-app.vercel.app` and `https://your-app.vercel.app/api/health`.
+1. Vercel **Root Directory** was set to `frontend` (API never deployed)
+2. Old setup used `api/index.py` which only matched `/api`, not `/api/health`
+3. SPA rewrite sent `/` to a missing `index.html`
 
-## 1. Push to GitHub
+**Current setup:** root `index.py` is the FastAPI app (via `pyproject.toml`). It handles `/api/*` and serves the React build from `frontend/dist`.
 
-```bash
-cd disaster-response-system
-git init
-git add .
-git commit -m "Deploy disaster response system to Vercel"
-# create repo on GitHub, then:
-git remote add origin https://github.com/YOUR_USER/disaster-response-system.git
-git push -u origin main
+## Deploy steps
+
+1. Commit & push the repo (include `ml/models/*_linear.pkl`, `preprocessor.pkl`, `ml/results/best_models.json`)
+2. Vercel → Project → Settings:
+   - **Root Directory:** empty / `.` (NOT `frontend`)
+   - Framework: auto / Other
+3. Env (optional): `SECRET_KEY=...`
+4. Redeploy
+
+## Verify
+
+```text
+GET /api/health   → {"status":"ok", ...}
+GET /api          → {"status":"ok", "health":"/api/health", ...}
+GET /             → React login page (HTML)
 ```
 
-Include at least:
-
-- `ml/models/*_linear.pkl`
-- `ml/models/preprocessor.pkl`
-- `ml/results/best_models.json`
-
-## 2. Import on Vercel
-
-1. Open [vercel.com/new](https://vercel.com/new)
-2. Import the GitHub repository
-3. **Root Directory:** leave as repo root (`.`) — do **not** set it to `frontend`
-4. Framework preset can stay automatic
-5. Build & Output are taken from `vercel.json`
-
-### Environment variables (recommended)
-
-| Name | Value |
-|------|--------|
-| `SECRET_KEY` | long random string |
-| `DEMO_MODE` | `true` |
-| `CORS_ORIGINS` | `https://your-app.vercel.app` (optional; same-origin works without it) |
-
-Do **not** set `VITE_API_URL` for this setup — the UI already calls `/api`.
-
-## 3. Deploy
-
-Click **Deploy**. After success:
-
-- App: `https://YOUR-PROJECT.vercel.app`
-- Health: `https://YOUR-PROJECT.vercel.app/api/health`
-- Docs: `https://YOUR-PROJECT.vercel.app/api/docs` (if exposed) or `/docs`
-
-## CLI alternative
+## CLI
 
 ```bash
-npm i -g vercel
 cd disaster-response-system
-vercel login
-vercel --prod
+npx vercel login
+npx vercel --prod
 ```
 
 ## Notes
 
-- SQLite lives under `/tmp` on Vercel — data resets when the serverless instance is recycled (fine for demos).
-- Allocation uses a greedy solver on Vercel (OR-Tools is heavy). Local backend with `backend/requirements.txt` still uses OR-Tools.
-- Cold starts can take a few seconds while models load.
+- SQLite on `/tmp` resets between cold starts (demo OK)
+- Allocation uses greedy fallback on Vercel (no OR-Tools in slim deps)
+- Leave `VITE_API_URL` unset (browser calls same-origin `/api`)

@@ -1,14 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "python scripts/build_vercel.py",
-  "outputDirectory": "public",
   "functions": {
-    "api/index.py": {
+    "index.py": {
       "maxDuration": 60,
-      "excludeFiles": "{frontend/node_modules/**,frontend/src/**,backend/venv/**,backend/.pytest_cache/**,ml/data/**,**/*_random_forest.pkl,**/*_extra_trees.pkl,**/*_xgboost.pkl,**/*_hist_gradient.pkl,**/__pycache__/**}"
+      "excludeFiles": "{frontend/node_modules/**,frontend/src/**,backend/venv/**,backend/.pytest_cache/**,ml/data/**,**/*_random_forest.pkl,**/*_extra_trees.pkl,**/*_xgboost.pkl,**/*_hist_gradient.pkl,**/__pycache__/**,public/**}"
     }
-  },
-  "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ]
+  }
 }

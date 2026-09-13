@@ -86,10 +86,21 @@ app.include_router(dashboard.router, prefix="/api")
 
 @app.get("/")
 def root():
+    # On Vercel, index.py replaces this with the SPA FileResponse when dist exists.
     return {
         "message": settings.app_name,
         "docs": "/docs",
         "health": "/api/health",
         "demo_mode": settings.demo_mode,
         "ml_ready": predictor.ready,
+    }
+
+
+@app.get("/api")
+def api_info():
+    return {
+        "status": "ok",
+        "health": "/api/health",
+        "docs": "/docs",
+        "message": settings.app_name,
     }

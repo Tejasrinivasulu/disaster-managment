@@ -212,42 +212,29 @@ App: `http://127.0.0.1:5173` (Vite proxies `/api` → `:8000`)
 
 ---
 
-# 🌐 Deployment — Vercel Only
+# Deploy on **Vercel only** (one project = React UI + FastAPI).
 
-**One Vercel project serves both frontend and backend.**
+See **[DEPLOY.md](./DEPLOY.md)** for the full checklist.
 
-Full guide: **[DEPLOY.md](./DEPLOY.md)**
+### Quick fix if you see `{"detail":"Not Found"}`
 
-### Quick steps
-
-1. Push this repo to GitHub (include `ml/models/*_linear.pkl` + `preprocessor.pkl`)
-2. Vercel → **Add New Project** → import repo  
-3. Root Directory = **repository root** (not `frontend`)
-4. Deploy — `vercel.json` builds the UI and wires `api/index.py`
-5. Open `https://YOUR-APP.vercel.app`
-
-| Check | URL |
-|--------|-----|
-| Site | `https://YOUR-APP.vercel.app` |
-| Health | `https://YOUR-APP.vercel.app/api/health` |
+1. Redeploy from repo root (not `frontend/`)
+2. Open `https://YOUR-APP.vercel.app/api/health` — must return `"status":"ok"`
+3. Then open `https://YOUR-APP.vercel.app/` for the login UI
+4. Do **not** set Root Directory to `frontend` in Vercel project settings
 
 ### CLI
 
 ```bash
 cd disaster-response-system
-npx vercel login
 npx vercel --prod
 ```
 
-### Env vars (optional but recommended)
-
-| Name | Example |
-|------|---------|
-| `SECRET_KEY` | long random production secret |
-| `DEMO_MODE` | `true` |
-
-Leave `VITE_API_URL` unset so the UI calls same-origin `/api`.
-
+| Check | URL |
+|--------|-----|
+| UI | `https://YOUR-APP.vercel.app/` |
+| Health | `https://YOUR-APP.vercel.app/api/health` |
+| API root | `https://YOUR-APP.vercel.app/api` |
 ---
 
 # 📡 API Overview
