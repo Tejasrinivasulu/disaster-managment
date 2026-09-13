@@ -19,17 +19,14 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-# Frontend deps (cache-friendly)
-COPY frontend/package.json frontend/package-lock.json* frontend/
-RUN cd frontend && npm install
-
-# App source + ML artifacts (linear models + preprocessor)
+# App source + ML artifacts
 COPY backend ./backend
 COPY frontend ./frontend
 COPY ml ./ml
 
-RUN cd frontend && npm run build \
-    && test -f frontend/dist/index.html
+# Install & build React (path is dist/ after cd frontend)
+WORKDIR /app/frontend
+RUN npm install && npm run build && test -f dist/index.html
 
 WORKDIR /app/backend
 
