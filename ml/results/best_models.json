@@ -1,0 +1,85 @@
+{
+  "selected_by": "test_r2",
+  "dataset": "C:\\Users\\Teja Srinivasulu\\OneDrive\\Desktop\\Disaster app\\disaster-response-system\\ml\\data\\resource_demand_ml_ready.csv",
+  "n_rows": 212121,
+  "note": "Test Accuracy (%) is R2-based Accuracy = Test R2 x 100 (not classification accuracy).",
+  "best_models": {
+    "food_demand": {
+      "model": "Linear Regression",
+      "test_r2": 0.9928767635550334,
+      "accuracy_r2_pct": 99.28767635550334,
+      "model_file": "food_linear.pkl",
+      "slug": "linear",
+      "mae": 117.83539521387243,
+      "rmse": 265.48888420227854,
+      "mape": 8.394554906700774
+    },
+    "water_demand_litres": {
+      "model": "Linear Regression",
+      "test_r2": 0.9906137518830727,
+      "accuracy_r2_pct": 99.06137518830727,
+      "model_file": "water_linear.pkl",
+      "slug": "linear",
+      "mae": 414.6951103143782,
+      "rmse": 937.5221725441681,
+      "mape": 10.62214298272676
+    },
+    "medical_kit_demand": {
+      "model": "Linear Regression",
+      "test_r2": 0.9746090725654062,
+      "accuracy_r2_pct": 97.46090725654062,
+      "model_file": "medical_linear.pkl",
+      "slug": "linear",
+      "mae": 14.159310412613928,
+      "rmse": 30.615366167123405,
+      "mape": 25.14843289792597
+    },
+    "shelter_demand": {
+      "model": "Linear Regression",
+      "test_r2": 0.9918819600040033,
+      "accuracy_r2_pct": 99.18819600040032,
+      "model_file": "shelter_linear.pkl",
+      "slug": "linear",
+      "mae": 64.50095738190626,
+      "rmse": 144.26782850498438,
+      "mape": 9.540772301696839
+    }
+  },
+  "comparison": {
+    "Linear Regression": {
+      "Food Accuracy": 99.29,
+      "Water Accuracy": 99.06,
+      "Medical Accuracy": 97.46,
+      "Shelter Accuracy": 99.19,
+      "Average": 98.75
+    },
+    "Extra Trees": {
+      "Food Accuracy": 96.87,
+      "Water Accuracy": 97.83,
+      "Medical Accuracy": 94.5,
+      "Shelter Accuracy": 97.1,
+      "Average": 96.575
+    },
+    "Random Forest": {
+      "Food Accuracy": 96.83,
+      "Water Accuracy": 97.73,
+      "Medical Accuracy": 94.58,
+      "Shelter Accuracy": 97.11,
+      "Average": 96.5625
+    },
+    "XGBoost": {
+      "Food Accuracy": 91.61,
+      "Water Accuracy": 92.09,
+      "Medical Accuracy": 86.95,
+      "Shelter Accuracy": 90.26,
+      "Average": 90.2275
+    },
+    "HistGradientBoosting": {
+      "Food Accuracy": 91.04,
+      "Water Accuracy": 91.85,
+      "Medical Accuracy": 86.61,
+      "Shelter Accuracy": 91.05,
+      "Average": 90.1375
+    }
+  }
+}

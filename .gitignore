@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+ENV/
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+!frontend/.env.example
+backend/.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ML artifacts (large) — keep only Linear + preprocessor for cloud deploy
+ml/data/*.csv
+!ml/data/.gitkeep
+ml/results/*.csv
+!ml/results/.gitkeep
+*.pkl
+ml/models/*.joblib
+!ml/models/.gitkeep
+!ml/models/*_linear.pkl
+!ml/models/preprocessor.pkl
+
+# Database
+*.db
+*.sqlite3
+
+# Vercel build output
+public/
+
+# OS
+Desktop.ini
+$RECYCLE.BIN/
