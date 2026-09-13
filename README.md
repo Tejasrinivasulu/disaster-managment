@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="120" alt="Disaster Response AI"/>
-
 # 🚨 Disaster Response AI
 
 ### AI-Based Disaster Response Management System  
@@ -13,7 +11,6 @@ Ingest Disaster Data • Score Zones • Predict Demand • Optimize Resources �
 
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)
