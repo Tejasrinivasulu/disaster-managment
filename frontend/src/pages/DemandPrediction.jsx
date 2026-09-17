@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import {
   BarChart,
   Bar,
@@ -10,12 +11,17 @@ import {
   Legend,
 } from 'recharts'
 import api from '../services/api'
+import EndToEndPipeline from '../components/EndToEndPipeline'
 import { formatNumber, formatPercent } from '../utils/format'
+import { opsLink, readOpsQuery } from '../utils/opsLinks'
 
 export default function DemandPrediction() {
+  const [searchParams] = useSearchParams()
+  const q = readOpsQuery(searchParams)
+
   const [disasters, setDisasters] = useState([])
-  const [disasterId, setDisasterId] = useState('')
-  const [zoneId, setZoneId] = useState('')
+  const [disasterId, setDisasterId] = useState(q.disasterId || '')
+  const [zoneId, setZoneId] = useState(q.zoneId || '')
   const [result, setResult] = useState(null)
   const [metrics, setMetrics] = useState([])
   const [best, setBest] = useState({})
@@ -36,10 +42,13 @@ export default function DemandPrediction() {
     ])
       .then(([d, s, m]) => {
         setDisasters(d.data)
-        if (d.data[0]) {
-          setDisasterId(d.data[0].id)
-          if (d.data[0].zones?.[0]) setZoneId(d.data[0].zones[0].id)
-        }
+        const did = q.disasterId || (d.data[0] ? String(d.data[0].id) : '')
+        const disaster = d.data.find((x) => String(x.id) === String(did)) || d.data[0]
+        setDisasterId(disaster ? String(disaster.id) : '')
+        const zid =
+          q.zoneId ||
+          (disaster?.zones?.[0] ? String(disaster.zones[0].id) : '')
+        setZoneId(zid)
         setStatus(s.data)
         setMetrics(m.data.results || [])
         setBest(m.data.best_models || {})
@@ -135,12 +144,14 @@ export default function DemandPrediction() {
       <div>
         <h2 className="font-display text-2xl font-bold">AI Demand Prediction</h2>
         <p className="text-sm text-command-600">
-          Trained regressors predict food, water, medical kits, and shelter demand.
+          Step 1 of the relief pipeline: predict zone demand, then allocate stock.
           {status && !status.ready && (
             <span className="ml-2 text-red-700">Models not loaded — run ml/train_models.py</span>
           )}
         </p>
       </div>
+
+      <EndToEndPipeline activeId="demand" disasterId={disasterId} zoneId={zoneId} />
 
       {error && <div className="rounded-md bg-red-50 p-3 text-sm text-red-800">{error}</div>}
 
@@ -211,6 +222,18 @@ export default function DemandPrediction() {
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Link
+              className="btn-primary"
+              to={opsLink('/allocation', { disasterId, zoneId })}
+            >
+              Next: Resource Allocation →
+            </Link>
+            <Link className="btn-secondary" to="/resources">
+              Check Stock →
+            </Link>
           </div>
         </>
       )}

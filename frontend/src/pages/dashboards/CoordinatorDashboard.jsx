@@ -92,10 +92,30 @@ export default function CoordinatorDashboard() {
                 Medical {formatNumber(selectedZone.medical_kit_demand)} · Shelter {formatNumber(selectedZone.shelter_demand)}
               </p>
               <div className="flex flex-wrap gap-2">
-                <Link className="btn-primary py-1 text-xs" to="/demand">AI Predict + Vulnerability</Link>
-                <Link className="btn-secondary py-1 text-xs" to="/allocation">Optimize Allocation</Link>
-                <Link className="btn-secondary py-1 text-xs" to="/logistics">Plan Route</Link>
-                <Link className="btn-secondary py-1 text-xs" to="/missions">Assign Mission</Link>
+                <Link
+                  className="btn-primary py-1 text-xs"
+                  to={`/demand?disaster_id=${selectedZone.disaster_id || ''}&zone_id=${selectedZone.id}`}
+                >
+                  1. Predict Demand
+                </Link>
+                <Link
+                  className="btn-secondary py-1 text-xs"
+                  to={`/allocation?disaster_id=${selectedZone.disaster_id || ''}&zone_id=${selectedZone.id}`}
+                >
+                  2. Allocate Resources
+                </Link>
+                <Link
+                  className="btn-secondary py-1 text-xs"
+                  to={`/logistics?disaster_id=${selectedZone.disaster_id || ''}&zone_id=${selectedZone.id}`}
+                >
+                  3. Plan Route
+                </Link>
+                <Link
+                  className="btn-secondary py-1 text-xs"
+                  to={`/missions?disaster_id=${selectedZone.disaster_id || ''}&zone_id=${selectedZone.id}`}
+                >
+                  4. Assign Mission
+                </Link>
               </div>
             </div>
           )}
@@ -130,8 +150,9 @@ export default function CoordinatorDashboard() {
             <p className="font-semibold">After field reports</p>
             <p>Dynamic AI Update: recalculate demand, then reallocate if needed.</p>
             <div className="flex flex-wrap gap-2">
-              <Link to="/demand" className="btn-primary py-1 text-xs">Recalculate Demand</Link>
-              <Link to="/allocation" className="btn-secondary py-1 text-xs">Reallocate</Link>
+              <Link to="/demand" className="btn-primary py-1 text-xs">1. Recalculate Demand</Link>
+              <Link to="/allocation" className="btn-secondary py-1 text-xs">2. Reallocate Resources</Link>
+              <Link to="/logistics" className="btn-secondary py-1 text-xs">3. Re-plan Routes</Link>
             </div>
           </div>
         </div>
